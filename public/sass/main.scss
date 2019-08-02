@@ -1,0 +1,68 @@
+@import 'common';
+
+
+body {
+  width: 100%;
+  height: 100%;
+  // background-color: #333;
+  cursor: default;
+}
+
+#addPin,
+#showState,
+#toPrevPage,
+#toNextPage {
+  position: fixed;
+  top: 60px;
+  right: 100px;
+  border: none;
+  border-radius: 2px;
+  padding: 0 12px;
+  height: 32px;
+  color: #fff;
+  background: #333;
+}
+
+#showState {
+  top: 108px;
+}
+
+#toPrevPage {
+  top: 108px;
+}
+
+#toNextPage {
+  top: 156px;
+}
+
+.waterfall-wrap {
+  margin: 0 auto;
+  position: relative;
+
+  &.cols-4 {
+    width: 992px;
+  }
+
+  .wfc {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 236px;
+    padding: 0 16px 16px 0;
+    opacity: 0.618;
+    border-radius: 4px;
+
+    color: #FFF;
+    font-size: 60px;
+    line-height: 100%;
+    text-align: center;
+    transition: transform .15s ease-in-out,box-shadow .15s ease-in-out;
+
+    &:hover {
+      box-shadow: 0 1px 3px rgba(0,0,0,.02), 0 16px 32px -4px rgba(0,0,0,.17);
+      transform: translateY(-1px);
+    }
+  }
+}
+
+
