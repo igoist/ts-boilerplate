@@ -1,26 +1,6 @@
 import * as React from 'react';
+import { createContainer } from 'unstated-next';
 import { log } from '@Utils';
-
-type StoreStatusProps = {
-  storeList: Array<any>,
-  current: number
-};
-
-type StoreContextProps = {
-  storeState: StoreStatusProps,
-  pushStore?: any,
-  toPrevStore?: any,
-  toNextStore?: any
-};
-
-let defaultStoreContext: StoreContextProps = {
-  storeState: {
-    storeList: [],
-    current: -1
-  }
-};
-
-const Context = React.createContext(defaultStoreContext);
 
 const useStore = () => {
   // default current is equal to storeList.length - 1
@@ -88,10 +68,4 @@ const useStore = () => {
   };
 };
 
-const Provider = (props: any) => {
-  const store = useStore();
-
-  return <Context.Provider value={{ ...store }}>{props.children}</Context.Provider>;
-};
-
-export default { Context, Provider };
+export default createContainer(useStore);

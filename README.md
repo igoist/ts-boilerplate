@@ -31,6 +31,8 @@ import { HB } from '@Utils';
 
 ## 全局状态与状态
 
+只依赖 unstate-next，用法很简单，参考其[官方说明](https://github.com/jamiebuilds/unstated-next)，不使用其他如 Redux 等状态管理库
+
 若要新增全局应用状态，通过在 contexts 中新建相应对象，并将对应 Provider 登记在 contexts/providers 中，最后会通过 ProvidersComposer 进行整合
 
 使用时如下
@@ -38,11 +40,10 @@ import { HB } from '@Utils';
 ```tsx
 ...
 
-const { useContext } = React
 import { Store } from '@Contexts';
 
 const someHookComponent = () => {
-  const store = useContext(Store.Context);
+  const store = Store.useContainer();
 
   ...
 };

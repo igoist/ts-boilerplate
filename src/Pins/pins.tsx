@@ -105,7 +105,7 @@ const handlePos = (config: handlePosConfig) => {
 };
 
 const usePageStatus = () => {
-  const store = React.useContext(Store.Context);
+  const store = Store.useContainer();
 
   const [pageState, setPageState] = useState({
     wrapHeight: 0,
