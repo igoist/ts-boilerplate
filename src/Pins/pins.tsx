@@ -1,13 +1,16 @@
 import * as React from 'react';
 
+import { Store } from '@Contexts';
+import { log } from '@Utils';
+
 const { useState, useEffect } = React;
 
 interface PinProps {
-  id: number,
-  top: number,
-  left: number,
-  height: number,
-  bgColor: string,
+  id: number;
+  top: number;
+  left: number;
+  height: number;
+  bgColor: string;
   setLayer?: (id: number) => void;
 }
 
@@ -15,7 +18,8 @@ const Pin = (props: PinProps) => {
   const { id, top, left, height, bgColor, setLayer } = props;
 
   return (
-    <div className='wfc'
+    <div
+      className='wfc'
       style={{
         top: top + 'px',
         left: left + 'px',
@@ -24,7 +28,7 @@ const Pin = (props: PinProps) => {
         backgroundColor: bgColor
       }}
     >
-      { id + 'x' }
+      {id + 'x'}
     </div>
   );
 };
@@ -33,25 +37,25 @@ const o = {
   cellWidth: 236,
   cellSpace: 16,
   containerSelectorOffset: 50,
-  hibernate: 5000,
+  hibernate: 5000
   // maxCol: 0,
   // minCol: 0,
   // height: 0,
 };
 
 interface WFCell {
-  id: number,
-  col: number,
-  top: number,
-  left: number,
-  height: number,
-  bgColor: string
+  id: number;
+  col: number;
+  top: number;
+  left: number;
+  height: number;
+  bgColor: string;
 }
 
 type handlePosConfig = {
   cell: WFCell,
-  hs: Array<number>,
-}
+  hs: Array<number>
+};
 
 const handlePos = (config: handlePosConfig) => {
   const { cell, hs } = config;
@@ -60,7 +64,6 @@ const handlePos = (config: handlePosConfig) => {
   let col = 0;
 
   if (0) {
-
   } else {
     for (let i = 0; i < cols; i++) {
       if (hs[i] < hs[col]) {
@@ -94,96 +97,35 @@ const handlePos = (config: handlePosConfig) => {
       ...cell,
       col,
       top,
-      left,
+      left
     },
     wrapHeight: tmpWrapHeight,
-    hs: hs,
-  }
+    hs: hs
+  };
 };
 
-const useStoreStatus = () => {
-  // default current is equal to storeList.length - 1
-  // and use it as storeState.storeList[storeState.current]
-  const [storeState, setStore] = useState({
-    storeList: [],
-    current: -1
-  });
-
-  const pushStore = (newStore: any, setMethod: (state: any) => void) => {
-    if (storeState.current === storeState.storeList.length - 1) {
-      setStore({
-        storeList: [
-          ...storeState.storeList,
-          newStore
-        ],
-        current: storeState.current + 1
-      });
-    } else {
-      let tmp = storeState.storeList.slice(0, storeState.current + 1);
-
-      setStore({
-        storeList: [
-          ...tmp,
-          newStore
-        ],
-        current: storeState.current + 1
-      });
-    }
-
-    setMethod(newStore);
-  };
-
-  const toPrevStore = (setMethod: (state: any) => void) => {
-    if (storeState.current > 0) {
-      setStore({
-        storeList: storeState.storeList,
-        current: storeState.current - 1
-      });
-
-      setMethod(storeState.storeList[storeState.current - 1]);
-
-      // console.log('toPrevStore: ', storeState.current, storeState.current - 1);
-    } else {
-      console.log('toPrevStore: is at the beginning');
-    }
-  };
-
-  const toNextStore = (setMethod: (state: any) => void) => {
-    if (storeState.current + 1 < storeState.storeList.length) {
-      setStore({
-        storeList: storeState.storeList,
-        current: storeState.current + 1
-      });
-
-      setMethod(storeState.storeList[storeState.current + 1]);
-
-      // console.log('toNextStore: ', storeState.current, storeState.current + 1);
-    } else {
-      console.log('toNextStore: is the latest');
-    }
-  };
-
-  return {
-    storeState,
-    pushStore,
-    toPrevStore,
-    toNextStore
-  }
-}
-
 const usePageStatus = () => {
+  const store = React.useContext(Store.Context);
+
   const [pageState, setPageState] = useState({
     wrapHeight: 0,
     cols: 4,
     hs: [0, 0, 0, 0],
     pins: [],
-    globalPins: [],
+    globalPins: []
   });
 
-  const { pushStore, toPrevStore, toNextStore } = useStoreStatus();
+  const { storeState, pushStore, toPrevStore, toNextStore } = store;
 
   useEffect(() => {
-    console.log('usePageStatus Init');
+    if (store.storeState.storeList.length > 0) {
+      setPageState(storeState.storeList[storeState.current]);
+      return;
+    }
+    log.dev({
+      title: 'usePageStatus',
+      text: 'Init'
+    });
     let xhr = new XMLHttpRequest();
     xhr.overrideMimeType('application/json');
     xhr.open('GET', '/map/map-pins.json');
@@ -198,7 +140,7 @@ const usePageStatus = () => {
         let tmpWrapHeight = 0;
         let tmpHs = [0, 0, 0, 0];
         tmpPins = tmpPins.map((pin: WFCell) => {
-          const { cell, wrapHeight,  hs } = handlePos({
+          const { cell, wrapHeight, hs } = handlePos({
             cell: pin,
             hs: tmpHs
           });
@@ -207,16 +149,20 @@ const usePageStatus = () => {
           return cell;
         });
 
-        pushStore({
-          wrapHeight: tmpWrapHeight,
-          cols: 4,
-          hs: tmpHs,
-          pins: tmpPins,
-          globalPins: tmpGlobalPins,
-        }, setPageState);
+        pushStore(
+          {
+            wrapHeight: tmpWrapHeight,
+            cols: 4,
+            hs: tmpHs,
+            pins: tmpPins,
+            globalPins: tmpGlobalPins
+          },
+          setPageState
+        );
       }
     };
     xhr.send();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const addRandomPin = () => {
@@ -229,27 +175,24 @@ const usePageStatus = () => {
       hs: [...pageState.hs]
     });
 
-    pushStore({
-      ...pageState,
-      wrapHeight: wrapHeight,
-      hs,
-      pins: [
-        ...pageState.pins, cell
-      ]
-    }, setPageState);
-  };
-
-  const setLayer = (id: number) => {
-
+    pushStore(
+      {
+        ...pageState,
+        wrapHeight: wrapHeight,
+        hs,
+        pins: [...pageState.pins, cell]
+      },
+      setPageState
+    );
   };
 
   const toPrevPage = () => {
     toPrevStore(setPageState);
-  }
+  };
 
   const toNextPage = () => {
     toNextStore(setPageState);
-  }
+  };
 
   return {
     pageState,
@@ -264,41 +207,28 @@ const App = () => {
 
   return (
     <React.Fragment>
-      <div className={ `waterfall-wrap cols-${ pageState.cols }` }
+      <div
+        className={`waterfall-wrap cols-${pageState.cols}`}
         style={{
           height: pageState.wrapHeight
         }}
       >
-        {
-          pageState.pins.map((pin, index) => {
-            return (
-              <Pin
-                id={ pin.id }
-                top={ pin.top }
-                left={ pin.left }
-                height={ pin.height }
-                bgColor={ pin.bgColor }
-                key={ index.toString() }
-              />
-            )
-          })
-        }
+        {pageState.pins.map((pin, index) => {
+          return <Pin id={pin.id} top={pin.top} left={pin.left} height={pin.height} bgColor={pin.bgColor} key={index.toString()} />;
+        })}
       </div>
 
-      <button
-        id='addPin'
-        onClick={ addRandomPin }
-      >AddRandomPin</button>
-      <button
-        id='toPrevPage'
-        onClick={ toPrevPage }
-      >toPrevPage</button>
-      <button
-        id='toNextPage'
-        onClick={ toNextPage }
-      >toNextPage</button>
+      <button id='addPin' onClick={addRandomPin}>
+        AddRandomPin
+      </button>
+      <button id='toPrevPage' onClick={toPrevPage}>
+        toPrevPage
+      </button>
+      <button id='toNextPage' onClick={toNextPage}>
+        toNextPage
+      </button>
     </React.Fragment>
   );
-}
+};
 
 export default App;

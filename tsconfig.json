@@ -8,8 +8,14 @@
     "jsx": "react",
     "baseUrl": "./",
     "paths": {
-      "Components/*": ["src/components/*"],
-      "Utils": ["src/utils"]
+      "@Layouts": ["src/layouts"],
+      "@Layouts/*": ["src/layouts/*"],
+      "@Components": ["src/components"],
+      "@Components/*": ["src/components/*"],
+      "@Contexts": ["src/contexts"],
+      "@Contexts/*": ["src/contexts/*"],
+      "@Utils": ["src/utils"],
+      "@Utils/*": ["src/utils/*"]
     }
   },
   "include": [
